@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
                 Snackbar.LENGTH_SHORT).show();
         } else {
             solicitarPermisogps(Manifest.permission.ACCESS_FINE_LOCATION, "Sin el permiso"+
-                    " de la ubicación no puedo accecer al gps.",
+                    " de la ubicación no puedo recuperar los datos.",
                 SOLICITUD_PERMISO_GPS_LOG, this);
         }
     }
