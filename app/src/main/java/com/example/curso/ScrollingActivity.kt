@@ -2,6 +2,7 @@ package com.example.curso
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.Menu
@@ -12,6 +13,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.curso.casos_uso.CasosUsoActividades
 import com.example.curso.casos_uso.CasosUsoLugar
 import com.example.curso.modelo.Lugar
@@ -22,26 +25,29 @@ import java.lang.Integer.parseInt
 
 
 class ScrollingActivity : AppCompatActivity() {
+    val SOLICITUD_PERMISO_LOCALIZACION = 1
+    val usoLocalizacion by lazy {
+        CasosUsoLocalizacion(this, SOLICITUD_PERMISO_LOCALIZACION) }
     val actividad by lazy { CasosUsoActividades(this) }
     val lugares by lazy { Aplicacion.lugares }
     val usoLugar by lazy { CasosUsoLugar(this, lugares) }
     val adaptador by lazy { Aplicacion.adaptador }
     lateinit var lugar: Lugar
-  
+
     //var mp: MediaPlayer? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_scrolling)
+       // setContentView(R.layout.activity_scrolling)
        // mp = MediaPlayer.create(this, R.raw.audio)
        // mp?.start()
-        /*setContentView(R.layout.content_main)
+       setContentView(R.layout.content_main)
 
         recycler_view.apply {
             setHasFixedSize(true)
-            layoutManager = GridLayoutManager(this@ScrollingActivity,2)
-          //  layoutManager = LinearLayoutManager(this@ScrollingActivity)
+           // layoutManager = GridLayoutManager(this@ScrollingActivity,2)
+           layoutManager = LinearLayoutManager(this@ScrollingActivity)
             adapter = adaptador
-        }*/
+        }
         adaptador.onClick  =  {
             val pos = recycler_view.getChildAdapterPosition(it)
             usoLugar.mostrar(pos)
@@ -49,14 +55,14 @@ class ScrollingActivity : AppCompatActivity() {
         Toast.makeText(this, "Método onCreate", Toast.LENGTH_SHORT).show();
 
 
-        button03.setOnClickListener{
+       /* button03.setOnClickListener{
             //lanzarAcercaDe()
             actividad.lanzarAcerdaDe()
         }
         button04.setOnClickListener{
             finish()
         }
-
+*/
        /* setSupportActionBar(toolbar)
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -65,12 +71,28 @@ class ScrollingActivity : AppCompatActivity() {
 
          */
     }
+    override fun onResume() {
+        super.onResume()
+        usoLocalizacion.activar()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        usoLocalizacion.desactivar()
+    }
     override fun onStart() {
         super.onStart()
         Toast.makeText(this, "onStart", Toast.LENGTH_SHORT).show()
     }
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray ) {
+        if (requestCode == SOLICITUD_PERMISO_LOCALIZACION
+                && grantResults.size == 1
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            usoLocalizacion.permisoConcedido()
 
-    override fun onResume() {
+    }
+    /*override fun onResume() {
         super.onResume()
         Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show()
     }
@@ -80,6 +102,7 @@ class ScrollingActivity : AppCompatActivity() {
         super.onPause()
         //mp?.pause();
     }
+     */
 
     override fun onStop() {
         Toast.makeText(this, "onStop", Toast.LENGTH_SHORT).show()
@@ -114,6 +137,7 @@ class ScrollingActivity : AppCompatActivity() {
         }
     }
 */
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_scrolling, menu)
@@ -177,5 +201,6 @@ class ScrollingActivity : AppCompatActivity() {
             .setNegativeButton("Cancelar", null)
             .show()
     }
+
 
 }
