@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="4dp">
@@ -33,21 +34,28 @@
         app:layout_constraintTop_toBottomOf="@id/nombre"
         app:layout_constraintStart_toEndOf="@+id/foto"
         app:layout_constraintEnd_toEndOf="parent"/>
-    <RatingBar android:id="@+id/valoracion"
+
+    <RatingBar
+        android:id="@+id/valoracion"
+        style="?android:attr/ratingBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="?android:attr/ratingBarStyleSmall"
         android:isIndicator="true"
         android:rating="3"
-        app:layout_constraintTop_toBottomOf="@id/direccion"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/foto"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-    <TextView android:id="@+id/distancia"
-        android:layout_width="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/direccion" />
+
+    <TextView
+        android:id="@+id/distancia"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_toRightOf="@id/valoracion"
         android:gravity="right"
-        android:text="... Km" />
+        android:text="... Km"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/valoracion"
+        app:layout_constraintTop_toBottomOf="@+id/direccion" />
 </androidx.constraintlayout.widget.ConstraintLayout>
