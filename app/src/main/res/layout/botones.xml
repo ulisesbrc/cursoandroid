@@ -22,12 +22,18 @@
     </FrameLayout>
 
     <Button
+        android:id="@+id/button05"
+        style="@style/EstiloBoton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/accion_mostrar" />
+    <Button
         android:id="@+id/button01"
         style="@style/EstiloBoton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="mostrarPreferencias"
-        android:text="@string/accion_mostrar" />
+        android:text="@string/accion_mostrar_preferencias" />
 
     <Button
         android:id="@+id/button02"

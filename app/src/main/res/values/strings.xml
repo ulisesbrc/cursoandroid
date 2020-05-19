@@ -91,6 +91,7 @@
     </string>
     <string name="action_settings">Settings</string>
     <string name="accion_mostrar">Mostrar Lugares</string>
+    <string name="accion_mostrar_preferencias">Mostrar Preferencias</string>
     <string name="accion_preferencias">Preferencias</string>
     <string name="accion_acerca_de">Acerca de </string>
     <string name="accion_salir">Salir</string>
