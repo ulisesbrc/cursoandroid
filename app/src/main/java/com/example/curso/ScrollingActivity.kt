@@ -163,6 +163,10 @@ class ScrollingActivity : AppCompatActivity() {
                 lanzarVistaLugar()
                 true;
             }
+            R.id.menu_mapa -> {
+                startActivity(Intent(this, MapaActivity::class.java))
+                true;
+            }
 
             else -> super.onOptionsItemSelected(item)
         }

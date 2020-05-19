@@ -58,6 +58,10 @@ class VistaLugarActivity : AppCompatActivity() {
               borrar()
                 return true
             }
+            R.id.menu_mapa -> {
+                startActivity(Intent(this, MapaActivity::class.java))
+                return true;
+            }
             else -> return super.onOptionsItemSelected(item)
         }
     }
