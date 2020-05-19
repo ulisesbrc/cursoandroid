@@ -37,10 +37,10 @@ class ScrollingActivity : AppCompatActivity() {
     //var mp: MediaPlayer? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-       // setContentView(R.layout.activity_scrolling)
+        setContentView(R.layout.activity_scrolling)
        // mp = MediaPlayer.create(this, R.raw.audio)
        // mp?.start()
-       setContentView(R.layout.content_main)
+       /*setContentView(R.layout.content_main)
 
         recycler_view.apply {
             setHasFixedSize(true)
@@ -54,15 +54,15 @@ class ScrollingActivity : AppCompatActivity() {
         }
         Toast.makeText(this, "Método onCreate", Toast.LENGTH_SHORT).show();
 
-
-       /* button03.setOnClickListener{
+*/
+        button03.setOnClickListener{
             //lanzarAcercaDe()
             actividad.lanzarAcerdaDe()
         }
         button04.setOnClickListener{
             finish()
         }
-*/
+
        /* setSupportActionBar(toolbar)
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
