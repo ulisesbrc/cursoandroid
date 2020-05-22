@@ -90,7 +90,7 @@ override fun onOptionsItemSelected(item: MenuItem): Boolean {
             edit_comentario.setVisibility(View.VISIBLE)
             edit_comentario.setText(lugar.comentarios)
         }
-        usoLugar.visualizarFoto(lugar, edit_foto,"")
+        usoLugar.visualizarFoto(lugar, edit_foto,"",this)
         //telefono.text = Integer.toString(lugar.telefono)
         //url.text = lugar.url
         //comentario.text = lugar.comentarios

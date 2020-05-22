@@ -121,7 +121,7 @@ class VistaLugarActivity : AppCompatActivity() {
             valoracion.setOnRatingBarChangeListener {
                     ratingBar, valor, fromUser -> lugar.valoracion = valor
             }
-        usoLugar.visualizarFoto(lugar, foto,uri)
+        usoLugar.visualizarFoto(lugar, foto,uri,this)
         }
     fun borrar(){
         AlertDialog.Builder(this)

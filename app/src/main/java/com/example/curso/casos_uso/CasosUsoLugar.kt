@@ -87,17 +87,13 @@ class CasosUsoLugar(val actividad: Activity,
     fun ponerFoto(pos: Int, uri: String, imageView: ImageView) {
         val lugar = lugares.elemento(pos)
         lugar.foto = uri ?: ""
-        visualizarFoto(lugar, imageView, uri)
+        visualizarFoto(lugar, imageView, uri,actividad)
     }
 
-    fun visualizarFoto(lugar: Lugar, imageView: ImageView, uri: String) {
+    fun visualizarFoto(lugar: Lugar, imageView: ImageView, uri: String, context: Context) {
         if (!(lugar.foto == null || lugar.foto.isEmpty())) {
             //imageView.setImageURI(Uri.parse(uri))
-           val resources : Resources = Resources.getSystem()
-            imageView.setImageBitmap(
-                decodeSampledBitmapFromResource(resources, R.id.foto, 100, 100)
-            )
-           // imageView.setImageBitmap(reduceBitmap(contexto, uri, 1024,   1024));
+            imageView.setImageBitmap(reduceBitmap(context, uri, 100,   100));
         } else {
             imageView.setImageBitmap(null)
         }
@@ -157,43 +153,6 @@ class CasosUsoLugar(val actividad: Activity,
             null
         }
     }
-    fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
-        // Raw height and width of image
-        val (height: Int, width: Int) = options.run { outHeight to outWidth }
-        var inSampleSize = 1
 
-        if (height > reqHeight || width > reqWidth) {
 
-            val halfHeight: Int = height / 2
-            val halfWidth: Int = width / 2
-
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
-                inSampleSize *= 2
-            }
-        }
-
-        return inSampleSize
-    }
-    fun decodeSampledBitmapFromResource(
-        res: Resources,
-        resId: Int,
-        reqWidth: Int,
-        reqHeight: Int
-    ): Bitmap {
-        // First decode with inJustDecodeBounds=true to check dimensions
-        return BitmapFactory.Options().run {
-            inJustDecodeBounds = true
-            BitmapFactory.decodeResource(res, resId, this)
-
-            // Calculate inSampleSize
-            inSampleSize = calculateInSampleSize(this, reqWidth, reqHeight)
-
-            // Decode bitmap with inSampleSize set
-            inJustDecodeBounds = false
-
-            BitmapFactory.decodeResource(res, resId, this)
-        }
-    }
 }
