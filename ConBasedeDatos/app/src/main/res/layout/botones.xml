@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".ScrollingActivity"
+    tools:showIn="@layout/activity_scrolling">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="30dp">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/content">
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/button05"
+        style="@style/EstiloBoton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/accion_mostrar" />
+    <Button
+        android:id="@+id/button01"
+        style="@style/EstiloBoton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="mostrarPreferencias"
+        android:text="@string/accion_mostrar_preferencias" />
+
+    <Button
+        android:id="@+id/button02"
+        style="@style/EstiloBoton.Alternativo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="lanzarPreferencias"
+        android:text="@string/accion_preferencias" />
+
+    <Button
+        android:id="@+id/button03"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/accion_acerca_de" />
+    <Button
+        android:id="@+id/button04"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/accion_salir" />
+</LinearLayout>
+</androidx.core.widget.NestedScrollView>
