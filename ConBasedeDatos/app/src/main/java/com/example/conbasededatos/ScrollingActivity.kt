@@ -19,7 +19,10 @@ import com.example.conbasededatos.casos_uso.CasosUsoActividades
 import com.example.conbasededatos.casos_uso.CasosUsoLugar
 import com.example.conbasededatos.modelo.Lugar
 import com.example.conbasededatos.presentacion.Aplicacion
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.activity_vista_lugar.*
 import kotlinx.android.synthetic.main.botones.*
+import kotlinx.android.synthetic.main.botones.fab
 import kotlinx.android.synthetic.main.content_main.*
 import java.lang.Integer.parseInt
 
@@ -70,13 +73,14 @@ class ScrollingActivity : AppCompatActivity() {
             actividad.lanzarMostrarListado()
         }
 
-       /* setSupportActionBar(toolbar)
+       // setSupportActionBar(toolbar)
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+            //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+              //      .setAction("Action", null).show()
+            usoLugar.nuevo()
         }
 
-         */
+
     }
     override fun onResume() {
         super.onResume()

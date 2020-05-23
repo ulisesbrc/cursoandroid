@@ -30,11 +30,13 @@ class VistaLugarActivity : AppCompatActivity() {
     val RESULTADO_GALERIA = 2  //poner antes de la clase
     val RESULTADO_FOTO = 3
     var uri = ""
+    private var _id: Int = -1
     private lateinit var uriUltimaFoto: Uri
     override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             setContentView(R.layout.vista_lugar)
             pos = intent.extras?.getInt("pos", 0) ?: 0
+            _id = adaptador.idPosicion(pos)
             //lugar = lugares.elemento(pos)
             lugar = adaptador.lugarPosicion(pos)
 
@@ -60,7 +62,7 @@ class VistaLugarActivity : AppCompatActivity() {
                 return true
             }
             R.id.accion_borrar -> {
-              borrar()
+                borrar()
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
@@ -70,6 +72,8 @@ class VistaLugarActivity : AppCompatActivity() {
                                   data: Intent?) {
         super.onActivityResult(requestCode,resultCode,data)
         if (requestCode == RESULTADO_EDITAR) {
+            lugar = lugares.elemento(_id)
+            pos = adaptador.posicionId(_id)
             actualizaVistas()
             scrollView1.invalidate()
         } else if (requestCode == RESULTADO_GALERIA) {
@@ -122,10 +126,14 @@ class VistaLugarActivity : AppCompatActivity() {
             //comentario.text = lugar.comentarios
             fecha.text = DateFormat.getDateInstance().format(Date(lugar.fecha))
             hora.text = DateFormat.getTimeInstance().format(Date(lugar.fecha))
-            valoracion.rating = lugar.valoracion
+            valoracion.setRating(lugar.valoracion)
             valoracion.setOnRatingBarChangeListener {
-                    ratingBar, valor, fromUser -> lugar.valoracion = valor
+                    ratingBar, valor, fromUser ->
+                lugar.valoracion = valor
+                usoLugar.actualizaPosLugar(pos, lugar, this)
+                pos = adaptador.posicionId(_id)
             }
+
         usoLugar.visualizarFoto(lugar, foto,uri, this)
         }
     fun borrar(){
@@ -136,7 +144,10 @@ class VistaLugarActivity : AppCompatActivity() {
         .setPositiveButton("Confirmar")  { dialog, whichButton ->
             //usoLugar.borrar(pos)
             //lugares.borrar(pos)
-            usoLugar.mostrar(pos)
+            val _id = adaptador.idPosicion(pos)
+            usoLugar.borrar(_id)
+            //return true
+            //usoLugar.mostrar(pos)
             // Toast.makeText(this id, Toast.LENGTH_SHORT).show()
         }
         .setNegativeButton("Cancelar", null)

@@ -34,7 +34,8 @@ class CasosUsoLugar(val actividad: Activity,
     fun mostrar(pos: Int) {
         val i = Intent(actividad, VistaLugarActivity::class.java)
         i.putExtra("pos", pos);
-        actividad.startActivity(i);
+        actividad.startActivityForResult(i, 1);
+
     }
     fun editar(pos: Int,codidoSolicitud: Int) {
         //actividad.finish()
@@ -43,12 +44,16 @@ class CasosUsoLugar(val actividad: Activity,
         actividad.startActivityForResult(i, codidoSolicitud);
     }
     fun borrar(id: Int) {
-        //lugares.borrar(id)
+        lugares.borrar(id)
+        adaptador.cursor = lugares.extraeCursor(actividad)
+        adaptador.notifyDataSetChanged()
         actividad.finish()
     }
-    fun actualiza(id:Int, lugar: Lugar){
-        //lugares.actualiza(id, lugar)
-        actividad.finish()
+    fun actualiza(id:Int, lugar: Lugar, contexto: Context){
+        lugares.actualiza(id, lugar)
+        adaptador.cursor = lugares.extraeCursor(contexto)
+        adaptador.notifyDataSetChanged()
+        //actividad.finish()
     }
     // INTENCIONES
     fun compartir(lugar: Lugar) = actividad.startActivity(
@@ -89,12 +94,18 @@ class CasosUsoLugar(val actividad: Activity,
         val lugar = Aplicacion.adaptador(lugares,actividad).lugarPosicion(pos)
         lugar.foto = uri ?: ""
         visualizarFoto(lugar, imageView, uri,actividad)
+        actualizaPosLugar(pos, lugar, actividad)
     }
 
     fun visualizarFoto(lugar: Lugar, imageView: ImageView, uri: String, context: Context) {
         if (!(lugar.foto == null || lugar.foto.isEmpty())) {
            // imageView.setImageURI(Uri.parse(uri))
-              imageView.setImageBitmap(reduceBitmap(context, uri, 10,   10));
+            if(uri !== ""){
+                imageView.setImageBitmap(reduceBitmap(context, uri, 10,   10));
+            } else {
+                imageView.setImageBitmap(reduceBitmap(context, lugar.foto, 10,   10));
+            }
+
         } else {
             imageView.setImageBitmap(null)
         }
@@ -153,6 +164,23 @@ class CasosUsoLugar(val actividad: Activity,
             e.printStackTrace()
             null
         }
+    }
+    fun actualizaPosLugar(pos: Int, lugar: Lugar, contexto: Context) {
+        val id = adaptador.idPosicion(pos)
+        //guardar(id, lugar);  //
+        actualiza(id, lugar,contexto)
+    }
+    fun nuevo() {
+        val _id = lugares.nuevo()
+        val posicion = Aplicacion.posicionActual
+        if (posicion != GeoPunto.SIN_POSICION) {
+            val lugar = lugares.elemento(_id)
+            lugar.posicion = posicion
+            lugares.actualiza(_id, lugar)
+        }
+        val i = Intent(actividad, EdicionLugarActivity::class.java)
+        i.putExtra("_id", _id)
+        actividad.startActivity(i)
     }
 
 }

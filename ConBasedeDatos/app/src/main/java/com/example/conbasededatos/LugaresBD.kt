@@ -3,6 +3,7 @@ package com.example.conbasededatos
 import android.content.Context
 import android.content.SharedPreferences
 import android.database.Cursor
+import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import androidx.preference.PreferenceManager
@@ -90,7 +91,7 @@ class LugaresBD(val contexto: Context?) :
 
     fun extraeCursor(contexto: Context?): Cursor {
         val pref: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(contexto)
-        val cantidad = pref.getString("fragmentos", "")
+        val cantidad = pref.getString("fragmentos", "10")
         val can: Int = cantidad!!.toInt()
         var consulta = when (pref.getString("orden", "0")) {
             "0" -> "SELECT * FROM lugares "
@@ -106,5 +107,54 @@ class LugaresBD(val contexto: Context?) :
         //consulta += " LIMIT ${pref.getString("maximo", "12")}"
         //return readableDatabase.rawQuery(consulta, null)
         return readableDatabase.rawQuery(consulta + " LIMIT $can",null)
+    }
+    fun elemento(id: Int): Lugar {
+        val cursor = readableDatabase.rawQuery(
+            "SELECT * FROM lugares WHERE _id = $id", null)
+        try {
+            if (cursor.moveToNext())
+                return extraeLugar(cursor)
+            else
+                throw SQLException("Error al acceder al elemento _id = $id")
+        } catch (e:Exception) {
+            throw e
+        } finally {
+            cursor?.close()
+        }
+    }
+    fun actualiza(id:Int, lugar:Lugar) = with(lugar) {
+        writableDatabase.execSQL("UPDATE lugares SET " +
+                "nombre = '$nombre', direccion = '$direccion', " +
+                "longitud = ${posicion.longitud}, latitud = ${posicion.latitud}, " +
+                "tipo = ${tipoLugar.ordinal}, foto ='$foto', telefono =$telefono, "+
+                "url = '$url', comentario = '$comentarios', fecha = $fecha, " +
+                "valoracion = $valoracion  WHERE _id = $id")
+    }
+    fun nuevo():Int {
+        var _id = -1
+        val lugar = Lugar(
+            nombre = "",
+            direccion = "",
+            posicion = GeoPunto.SIN_POSICION,
+            tipoLugar = TipoLugar.OTROS,
+            foto = "",
+            telefono = 0,
+            url = "",
+            comentarios = "",
+            fecha = 0,
+            valoracion = 0F)
+        writableDatabase.execSQL("INSERT INTO lugares (nombre, direccion, " +
+                "longitud, latitud, tipo, foto, telefono, url, comentario, " +
+                "fecha, valoracion) VALUES ('', '', ${lugar.posicion.longitud}, " +
+                "${lugar.posicion.latitud}, ${lugar.tipoLugar.ordinal}, '', 0, " +
+                "'', '', ${lugar.fecha},0 )")
+        val c = readableDatabase.rawQuery((
+                "SELECT _id FROM lugares WHERE fecha = " + lugar.fecha)+" ORDER BY _id DESC LIMIT 1", null)
+        if (c.moveToNext()) _id = c.getInt(0)
+        c.close()
+        return _id
+    }
+    fun borrar(id: Int) {
+        writableDatabase.execSQL("DELETE FROM lugares WHERE _id = $id")
     }
 }

@@ -65,4 +65,10 @@ open class AdaptadorLugares(val lugares: LugaresBD, var cursor: Cursor, val cont
     }
 
     override fun getItemCount() = cursor.getCount(); //lugares.tamaño()
+    fun posicionId(id: Int): Int {
+        var pos = 0
+        while (pos < itemCount && adaptador(lugares,context).idPosicion(pos) != id) pos++
+        return if (pos >= itemCount) -1
+        else                  pos
+    }
 }

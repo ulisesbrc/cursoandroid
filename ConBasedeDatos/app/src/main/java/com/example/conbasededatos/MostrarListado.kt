@@ -1,5 +1,6 @@
 package com.example.conbasededatos
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -8,6 +9,7 @@ import com.example.conbasededatos.casos_uso.CasosUsoLugar
 import com.example.conbasededatos.presentacion.Aplicacion
 import com.example.conbasededatos.presentacion.Aplicacion.adaptador
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.vista_lugar.*
 
 class MostrarListado: AppCompatActivity() {
     val actividad by lazy { CasosUsoActividades(this) }
@@ -17,7 +19,7 @@ class MostrarListado: AppCompatActivity() {
     val usoLugar by lazy { CasosUsoLugar(this, lugares, adaptador) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_scrolling)
+        //setContentView(R.layout.activity_scrolling)
         setContentView(R.layout.content_main)
 
         recycler_view.apply {
@@ -31,5 +33,12 @@ class MostrarListado: AppCompatActivity() {
             val pos = it.tag as Int
             usoLugar.mostrar(pos)
         }
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int,
+                                  data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        finish()
+        val i = Intent(this, MostrarListado::class.java)
+        startActivity(i);
     }
 }
