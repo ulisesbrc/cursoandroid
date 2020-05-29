@@ -58,7 +58,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:onClick="llamarTelefono">
+            >
             <ImageView
                 android:id="@+id/logo_telefono"
                 android:layout_width="40dp"
@@ -74,10 +74,11 @@
                 android:text="telefono"/>
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/barra_url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:onClick="verPgWeb">
+            >
             <ImageView
                 android:id="@+id/logo_url"
                 android:layout_width="40dp"
@@ -174,20 +175,18 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:contentDescription="logo galería"
-                    android:onClick="ponerDeGaleria"
                     app:srcCompat="@android:drawable/ic_menu_gallery" />
                 <ImageView
                     android:id="@+id/camara"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:contentDescription="logo cámara"
-                    android:onClick="tomarFoto"
                     app:srcCompat="@android:drawable/ic_menu_camera" />
                 <ImageView
+                    android:id="@+id/borrar_foto"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:contentDescription="Eliminar foto"
-                    android:onClick="eliminarFoto"
                     android:src="@android:drawable/ic_menu_close_clear_cancel" />
             </LinearLayout>
         </FrameLayout>

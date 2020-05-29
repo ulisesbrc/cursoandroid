@@ -1,56 +1,62 @@
-package com.example.conbasededatos
+package com.example.conbasededatos.presentacion
 
 import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils.isEmpty
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.example.conbasededatos.R
 import com.example.conbasededatos.casos_uso.CasosUsoLugar
 import com.example.conbasededatos.modelo.Lugar
-import com.example.conbasededatos.presentacion.Aplicacion
-import com.example.conbasededatos.presentacion.Aplicacion.adaptador
 import kotlinx.android.synthetic.main.vista_lugar.*
 import java.text.DateFormat
 import java.util.*
 
-class VistaLugarActivity : AppCompatActivity() {
-        val lugares by lazy { Aplicacion.lugares(this) }
+class VistaLugarFragment : Fragment() {
+        val lugares by lazy { Aplicacion.lugares(requireActivity()) }
         //var lugares = LugaresBD(this)
-        val adaptador by lazy { Aplicacion.adaptador(lugares,this) }
-        val usoLugar by lazy { CasosUsoLugar(this,null, lugares,adaptador) }
+        val adaptador by lazy { Aplicacion.adaptador(lugares,requireActivity()) }
+        val usoLugar by lazy { CasosUsoLugar(requireActivity(),this, lugares,adaptador) }
         var pos = 0
         lateinit var lugar: Lugar
     val RESULTADO_EDITAR = 1
     val RESULTADO_GALERIA = 2  //poner antes de la clase
     val RESULTADO_FOTO = 3
     var uri = ""
-    private var _id: Int = -1
+    var _id: Int = -1
     private lateinit var uriUltimaFoto: Uri
-    override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-        //setContentView(R.layout.vista_lugar)
-            setContentView(R.layout.activity_vista_lugar2)
-            pos = intent.extras?.getInt("pos", 0) ?: 0
-            _id = adaptador.idPosicion(pos)
-            //lugar = lugares.elemento(pos)
+    override fun onCreateView(inflador: LayoutInflater, contenedor: ViewGroup?,
+                              savedInstanceState: Bundle? ): View? {
+        setHasOptionsMenu(true)
+
+        val vista = inflador.inflate(R.layout.vista_lugar, contenedor, false)
+        return vista
+    }
+
+
+    override fun onActivityCreated(state: Bundle?) {
+        super.onActivityCreated(state)
+        pos = activity?.intent?.extras?.getInt("pos", 0) ?: 0
+        _id = adaptador.idPosicion(pos)
+        //lugar = lugares.elemento(pos)
+        if(_id != -1){
             lugar = adaptador.lugarPosicion(pos)
-        barra_url.setOnClickListener { usoLugar.verPgWeb(lugar) }
-        archivo.setOnClickListener { usoLugar.ponerDeGaleria(RESULTADO_GALERIA) }
-        camara.setOnClickListener {  uriUltimaFoto = usoLugar.tomarFoto(RESULTADO_FOTO) }
-        borrar_foto.setOnClickListener { usoLugar.ponerFoto(pos, "", foto)}
-        telefono.setOnClickListener{ usoLugar.llamarTelefono(lugar) }
-        actualizaVistas()
+            actualizaVistas()
+        } else {
+            Toast.makeText(activity, "No hay items", Toast.LENGTH_LONG).show();
+            activity?.finish()
         }
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        //ya tiene el menu el fragment
-       // menuInflater.inflate(R.menu.vista_lugar, menu)
-        return true
+
+
+    }
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.vista_lugar, menu)
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -65,6 +71,7 @@ class VistaLugarActivity : AppCompatActivity() {
             }
             R.id.accion_editar -> {
                 usoLugar.editar(pos,RESULTADO_EDITAR)
+               // requireActivity().finish()
                 return true
             }
             R.id.accion_borrar -> {
@@ -74,37 +81,37 @@ class VistaLugarActivity : AppCompatActivity() {
             else -> return super.onOptionsItemSelected(item)
         }
     }
-    override fun onRestart() {
-        super.onRestart()
-        finish()
-       // Toast.makeText(this, "onRestart", Toast.LENGTH_SHORT).show()
-        // mp?.start();
-    }
     override fun onActivityResult(requestCode: Int, resultCode: Int,
                                   data: Intent?) {
         super.onActivityResult(requestCode,resultCode,data)
         if (requestCode == RESULTADO_EDITAR) {
             lugar = lugares.elemento(_id)
             pos = adaptador.posicionId(_id)
-           // actualizaVistas()
-           // scrollView1.invalidate()
+            actualizaVistas()
+
+            if(scrollView1 != null) scrollView1.invalidate()
         } else if (requestCode == RESULTADO_GALERIA) {
+
             if (resultCode == RESULT_OK) {
                 usoLugar.ponerFoto(pos, data?.dataString ?: "", foto)
                 uri = data?.dataString?:""
             } else {
-                Toast.makeText(this, "Foto no cargada", Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, "Foto no cargada", Toast.LENGTH_LONG).show();
             }
         } else if (requestCode == RESULTADO_FOTO) {
             if (resultCode == Activity.RESULT_OK && uriUltimaFoto!=null) {
                 lugar.foto = uriUltimaFoto.toString()
                 usoLugar.ponerFoto(pos, lugar.foto, foto);
             } else {
-                Toast.makeText(this, "Error en captura", Toast.LENGTH_LONG).show()
+                Toast.makeText(activity, "Error en captura", Toast.LENGTH_LONG).show()
             }
         }
     }
     fun actualizaVistas(){
+        if (adaptador.itemCount == 0) return
+
+        // Toast.makeText(activity, "numero $pos", Toast.LENGTH_LONG).show()
+        lugar = adaptador.lugarPosicion(pos)
             nombre.text = lugar.nombre
            // logo_tipo.imageResource = lugar.tipoLugar.recurso
             tipo.text = lugar.tipoLugar.texto
@@ -142,14 +149,20 @@ class VistaLugarActivity : AppCompatActivity() {
             valoracion.setOnRatingBarChangeListener {
                     ratingBar, valor, fromUser ->
                 lugar.valoracion = valor
-                usoLugar.actualizaPosLugar(pos, lugar, this)
+                usoLugar.actualizaPosLugar(pos, lugar, requireActivity())
                 pos = adaptador.posicionId(_id)
             }
+        barra_url.setOnClickListener { usoLugar.verPgWeb(lugar) }
+        archivo.setOnClickListener { usoLugar.ponerDeGaleria(RESULTADO_GALERIA) }
+        camara.setOnClickListener { uriUltimaFoto = usoLugar.tomarFoto(RESULTADO_FOTO) }
+        borrar_foto.setOnClickListener { usoLugar.ponerFoto(pos, "", foto)}
+        telefono.setOnClickListener{ usoLugar.llamarTelefono(lugar) }
 
-        usoLugar.visualizarFoto(lugar, foto,uri, this)
+
+        usoLugar.visualizarFoto(lugar, foto,uri, requireActivity())
         }
     fun borrar(){
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(requireActivity())
         .setTitle("Borrado de lugar")
         .setMessage("¿Estás seguro que quieres eliminar este lugar?")
        // .setView(entrada)
@@ -158,6 +171,7 @@ class VistaLugarActivity : AppCompatActivity() {
             //lugares.borrar(pos)
             val _id = adaptador.idPosicion(pos)
             usoLugar.borrar(_id)
+
             //return true
             //usoLugar.mostrar(pos)
             // Toast.makeText(this id, Toast.LENGTH_SHORT).show()

@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.conbasededatos.casos_uso.CasosUsoLugar
 import com.example.conbasededatos.modelo.Lugar
@@ -20,7 +21,7 @@ import java.lang.Integer.parseInt
 class EdicionLugarActivity : AppCompatActivity() {
     val lugares by lazy { Aplicacion.lugares(this) }
     val adaptador by lazy { Aplicacion.adaptador(lugares,this) }
-    val usoLugar by lazy { CasosUsoLugar(this, lugares,adaptador) }
+    val usoLugar by lazy { CasosUsoLugar(this,null, lugares,adaptador) }
     var pos = 0
     lateinit var lugar: Lugar
     private var _id: Int = -1
@@ -58,20 +59,26 @@ override fun onOptionsItemSelected(item: MenuItem): Boolean {
     return when (item.itemId) {
         //R.id.action_settings -> true
         R.id.accion_cancelar -> {
-            if (_id!=-1) lugares.borrar(_id)
-            finish()
-            //usoLugar.mostrar(pos)
+            //if (_id!=-1) lugares.borrar(_id)
+            usoLugar.mostrar(pos)
+
             true
         }
         R.id.accion_guardar -> {
-
-            guardar()
             finish()
+            guardar()
+
             true
         }
         else -> super.onOptionsItemSelected(item)
     }
 }
+    override fun onRestart() {
+        super.onRestart()
+        finish()
+        // Toast.makeText(this, "onRestart", Toast.LENGTH_SHORT).show()
+        // mp?.start();
+    }
     fun actualizaVistas(){
         edit_nombre.setText(lugar.nombre)
         // logo_tipo.imageResource = lugar.tipoLugar.recurso
@@ -154,6 +161,7 @@ override fun onOptionsItemSelected(item: MenuItem): Boolean {
         } else {
             usoLugar.mostrar(_id-1)
         } */
+
         usoLugar.mostrar(pos)
 
     }

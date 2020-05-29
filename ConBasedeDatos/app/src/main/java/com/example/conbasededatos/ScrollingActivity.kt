@@ -35,10 +35,10 @@ class ScrollingActivity : AppCompatActivity() {
     val lugares by lazy { Aplicacion.lugares(this) }
     //var lugares = LugaresBD(this)
     val adaptador by lazy { Aplicacion.adaptador(lugares,this) }
-    val usoLugar by lazy { CasosUsoLugar(this, lugares,adaptador) }
+    val usoLugar by lazy { CasosUsoLugar(this,null, lugares,adaptador) }
     lateinit var lugar: Lugar
     val RESULTADO_PREFERENCIAS = 0
-
+    private var _id: Int = -1
 
     //var mp: MediaPlayer? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,7 +70,12 @@ class ScrollingActivity : AppCompatActivity() {
         }
         button05.setOnClickListener{
             //lanzarAcercaDe()
-            actividad.lanzarMostrarListado()
+            val count = adaptador.itemCount
+            if(adaptador.itemCount > 0) {
+                actividad.lanzarMostrarListado()
+            } else{
+                Toast.makeText(this, "No hay items", Toast.LENGTH_LONG).show()
+            }
         }
 
        // setSupportActionBar(toolbar)
@@ -122,6 +127,11 @@ class ScrollingActivity : AppCompatActivity() {
 
     override fun onRestart() {
         super.onRestart()
+        adaptador.cursor = lugares.extraeCursor(this)
+        adaptador.notifyDataSetChanged()
+        if (adaptador.itemCount == 0) {
+            Toast.makeText(this, "No hay items", Toast.LENGTH_LONG).show()
+        }
         Toast.makeText(this, "onRestart", Toast.LENGTH_SHORT).show()
        // mp?.start();
     }
@@ -197,9 +207,16 @@ class ScrollingActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == RESULTADO_PREFERENCIAS) {
+        /*if (requestCode == RESULTADO_PREFERENCIAS) {
             adaptador.cursor = lugares.extraeCursor(application)
             adaptador.notifyDataSetChanged()
+        }
+        */
+        if (requestCode == RESULTADO_PREFERENCIAS) {
+            adaptador.cursor = lugares.extraeCursor(application);
+            adaptador.notifyDataSetChanged();
+            if (usoLugar.obtenerFragmentVista() != null)
+                usoLugar.mostrar(0);
         }
     }
     fun salir(view: View?) {

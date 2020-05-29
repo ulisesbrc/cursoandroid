@@ -14,11 +14,15 @@ import android.provider.MediaStore
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.example.conbasededatos.*
 import com.example.conbasededatos.datos.LugaresLista
 import com.example.conbasededatos.modelo.GeoPunto
 import com.example.conbasededatos.modelo.Lugar
 import com.example.conbasededatos.presentacion.Aplicacion
+import com.example.conbasededatos.presentacion.SelectorFragment
+import com.example.conbasededatos.presentacion.VistaLugarFragment
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -26,28 +30,62 @@ import java.io.InputStream
 import java.net.URL
 
 
-class CasosUsoLugar(val actividad: Activity,
-                    val lugares: LugaresBD,
-                    val adaptador: AdaptadorLugaresBD
+class CasosUsoLugar(open val actividad: FragmentActivity,
+                    open val fragment: Fragment?,
+                    open val lugares: LugaresBD,
+                    open val adaptador: AdaptadorLugaresBD
 ) {
     // OPERACIONES BÁSICAS
     fun mostrar(pos: Int) {
-        val i = Intent(actividad, VistaLugarActivity::class.java)
-        i.putExtra("pos", pos);
-        actividad.startActivityForResult(i, 1);
+        var fragmentVista  = obtenerFragmentVista()
+        if (fragmentVista != null) {
+            fragmentVista.pos = pos
+            fragmentVista._id = adaptador.idPosicion(pos)
+            fragmentVista.actualizaVistas()
+        } else {
+            val i = Intent(actividad, VistaLugarActivity::class.java)
+            i.putExtra("pos", pos)
+            actividad.startActivity(i)
+        }
+    }
 
+    fun obtenerFragmentVista(): VistaLugarFragment? {
+        val manejador = actividad.supportFragmentManager
+        return manejador.findFragmentById(R.id.vista_lugar_fragment) as
+                VistaLugarFragment?
     }
     fun editar(pos: Int,codidoSolicitud: Int) {
+        /*if (obtenerFragmentSelector() == null) {
+            actividad.finish()
+        } else {*/
+            val i = Intent(actividad, EdicionLugarActivity::class.java)
+            i.putExtra("pos", pos);
+            fragment?.startActivityForResult(i, codidoSolicitud)
+              ?:actividad.startActivityForResult(i, codidoSolicitud)
+       // }
         //actividad.finish()
-        val i = Intent(actividad, EdicionLugarActivity::class.java)
-        i.putExtra("pos", pos);
-        actividad.startActivityForResult(i, codidoSolicitud);
+
+        //actividad.startActivityForResult(i, codidoSolicitud);
     }
     fun borrar(id: Int) {
         lugares.borrar(id)
         adaptador.cursor = lugares.extraeCursor(actividad)
         adaptador.notifyDataSetChanged()
-        actividad.finish()
+        if (adaptador.itemCount > 0 ) {
+            if (obtenerFragmentSelector() == null) {
+                actividad.finish()
+            } else {
+                mostrar(0)
+            }
+        } else {
+            actividad.finish()
+        }
+       // actividad.finish()
+    }
+    fun obtenerFragmentSelector(): SelectorFragment? {
+        val manejador = actividad.supportFragmentManager
+        return manejador.findFragmentById(R.id.selector_fragment) as
+                SelectorFragment?
     }
     fun actualiza(id:Int, lugar: Lugar, contexto: Context){
         lugares.actualiza(id, lugar)
@@ -87,7 +125,9 @@ class CasosUsoLugar(val actividad: Activity,
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "image/*"
         }
-        actividad.startActivityForResult(i, RESULTADO_GALERIA)
+        fragment?.startActivityForResult(i, RESULTADO_GALERIA)
+            ?:actividad.startActivityForResult(i, RESULTADO_GALERIA)
+        //actividad.startActivityForResult(i, RESULTADO_GALERIA)
     }
     fun ponerFoto(pos: Int, uri: String, imageView: ImageView) {
         //val lugar = lugares.elemento(pos)
@@ -117,12 +157,14 @@ class CasosUsoLugar(val actividad: Activity,
                 actividad.getExternalFilesDir(Environment.DIRECTORY_PICTURES) )
             val uriUltimaFoto = if (Build.VERSION.SDK_INT >= 24)
                 FileProvider.getUriForFile(
-                    actividad, "com.example.curso.fileProvider", file )
+                    actividad, "com.example.conbasededatos.fileProvider", file )
             else Uri.fromFile(file)
             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             intent.putExtra(MediaStore.EXTRA_OUTPUT, uriUltimaFoto)
-            actividad.startActivityForResult(intent, codidoSolicitud)
-            return uriUltimaFoto
+
+        fragment?.startActivityForResult(intent, codidoSolicitud)
+            ?:actividad.startActivityForResult(intent, codidoSolicitud)
+             return uriUltimaFoto
        /* } catch (ex: IOException) {
             Toast.makeText(actividad, "Error al crear fichero de imagen",
                 Toast.LENGTH_LONG).show()
