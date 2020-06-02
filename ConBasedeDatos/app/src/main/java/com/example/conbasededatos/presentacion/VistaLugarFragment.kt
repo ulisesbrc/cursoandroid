@@ -51,7 +51,10 @@ class VistaLugarFragment : Fragment() {
             Toast.makeText(activity, "No hay items", Toast.LENGTH_LONG).show();
             activity?.finish()
         }
-
+        logo_hora.setOnClickListener { usoLugar.cambiarHora(pos) }
+        hora.setOnClickListener { usoLugar.cambiarHora(pos) }
+        logo_fecha.setOnClickListener { usoLugar.cambiarFecha(pos) }
+        fecha.setOnClickListener { usoLugar.cambiarFecha(pos) }
 
     }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

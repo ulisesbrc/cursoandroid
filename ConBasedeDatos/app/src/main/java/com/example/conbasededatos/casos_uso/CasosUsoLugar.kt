@@ -1,40 +1,38 @@
 package com.example.conbasededatos.casos_uso
 
-import android.app.Activity
-import android.app.Application
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.example.conbasededatos.*
-import com.example.conbasededatos.datos.LugaresLista
 import com.example.conbasededatos.modelo.GeoPunto
 import com.example.conbasededatos.modelo.Lugar
-import com.example.conbasededatos.presentacion.Aplicacion
-import com.example.conbasededatos.presentacion.SelectorFragment
-import com.example.conbasededatos.presentacion.VistaLugarFragment
+import com.example.conbasededatos.presentacion.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
 import java.net.URL
+import java.text.DateFormat
+import java.util.*
 
 
-class CasosUsoLugar(open val actividad: FragmentActivity,
+open class CasosUsoLugar(open val actividad: FragmentActivity,
                     open val fragment: Fragment?,
                     open val lugares: LugaresBD,
                     open val adaptador: AdaptadorLugaresBD
-) {
+) :  TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
     // OPERACIONES BÁSICAS
     fun mostrar(pos: Int) {
         var fragmentVista  = obtenerFragmentVista()
@@ -223,6 +221,52 @@ class CasosUsoLugar(open val actividad: FragmentActivity,
         val i = Intent(actividad, EdicionLugarActivity::class.java)
         i.putExtra("_id", _id)
         actividad.startActivity(i)
+    }
+    var pos: Int = -1
+    lateinit var lugar: Lugar
+
+    fun cambiarHora(pos: Int) {//, textView: TextView
+        lugar = adaptador.lugarPosicion(pos)
+        this.pos = pos
+        val dialogo = DialogoSelectorHora()
+        dialogo.setOnTimeSetListener(this)
+        val args = Bundle()
+        args.putLong("fecha", lugar.fecha)
+        dialogo.setArguments(args)
+        dialogo.show(actividad.supportFragmentManager, "selectorHora")
+    }
+
+    override fun onTimeSet(vista: TimePicker?, hora: Int, minuto: Int) {
+        val calendario = Calendar.getInstance()
+        calendario.setTimeInMillis(lugar.fecha)
+        calendario.set(Calendar.HOUR_OF_DAY, hora)
+        calendario.set(Calendar.MINUTE, minuto)
+        lugar.fecha = calendario.getTimeInMillis()
+        actualizaPosLugar(pos, lugar,actividad)
+        val textView = actividad.findViewById<TextView>(R.id.hora)
+        textView.text= DateFormat.getTimeInstance().format(Date(lugar.fecha))
+    }
+    fun cambiarFecha(pos: Int) {
+        lugar = adaptador.lugarPosicion(pos)
+        this.pos = pos
+        val dialogo = DialogoSelectorFecha()
+        dialogo.setOnDateSetListener(this)
+        val args = Bundle()
+        args.putLong("fecha", lugar.fecha)
+        dialogo.setArguments(args)
+        dialogo.show(actividad.supportFragmentManager, "selectorFecha")
+    }
+
+    override fun onDateSet(view: DatePicker, año: Int, mes: Int, dia: Int) {
+        val calendario = Calendar.getInstance()
+        calendario.timeInMillis = lugar.fecha
+        calendario.set(Calendar.YEAR, año)
+        calendario.set(Calendar.MONTH, mes)
+        calendario.set(Calendar.DAY_OF_MONTH, dia)
+        lugar.fecha = calendario.timeInMillis
+        actualizaPosLugar(pos, lugar,actividad)
+        val textView = actividad.findViewById<TextView>(R.id.fecha)
+        textView.text = java.text.DateFormat.getDateInstance().format(Date(lugar.fecha))
     }
 
 }
